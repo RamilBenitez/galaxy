@@ -1,0 +1,46 @@
+<tool id="uniqprimer" name="Uniqprimer" version="0.5.0">
+  <description>Design specific primers of sequences</description>
+
+  <requirements>
+    <container type="docker">volture2721/uniqprimer:0.5.0</container>
+  </requirements>
+
+  <command detect_errors="exit_code">
+    uniqprimer.sh "$include" "$exclude" "$product_size_range" "$primer_size" "$min_size" "$max_size" "$crossvalidate" "$outfile" "$log" "$fasta"
+#for $i in $inputs
+    -i "${i.input}"
+#end for
+  </command>
+
+  <inputs>
+    <param format="fasta" name="include" type="data" label="FASTA file to include" help="Sequences for which you want to design specific primers"/>
+    <repeat name="inputs" title="Additional Include FASTA files">
+      <param name="input" type="data" format="fasta" label="Additional FASTA file to include"/>
+    </repeat>
+    <param format="fasta" name="exclude" type="data" label="FASTA file to exclude" help="Primers will not match these sequences"/>
+    <param type="text" name="product_size_range" label="Product size range" value="100-300"/>
+    <param type="text" name="primer_size" label="Optimal primer size" value="20"/>
+    <param type="text" name="min_size" label="Min primer size" value="18"/>
+    <param type="text" name="max_size" label="Max primer size" value="27"/>
+    <param name="crossvalidate" type="select" label="Cross validate primers against exclude files for extra certainty">
+      <option value="Yes">Yes</option>
+      <option value="No">No</option>
+    </param>
+  </inputs>
+
+  <outputs>
+    <data format="txt" name="outfile" label="Primer list"/>
+    <data format="fasta" name="fasta" label="Fasta for Primer3"/>
+    <data format="txt" name="log" label="Logfile"/>
+  </outputs>
+
+  <help>
+**UniqPrimer version 0.5.0**
+
+UniqPrimer designs specific primers for sequences. The goal is to accept a number of "include" FASTA files of diagnostic target genomes (draft or complete) and "exclude" files of non-target genomes, and output a list of PCR primers that will amplify target genomes but not non-target genomes.
+
+This tool was encapsulated in Galaxy by IRRI and the South Green Bioinformatics Platform.
+
+Please cite appropriately.
+  </help>
+</tool>
