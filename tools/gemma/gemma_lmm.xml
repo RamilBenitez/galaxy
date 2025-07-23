@@ -1,0 +1,53 @@
+<tool id="gemma_lmm" name="GEMMA Univariate LMM" version="0.98.6">
+  <description>Perform univariate linear mixed model analysis using GEMMA</description>
+  <requirements>
+    <container type="docker">voluture2721/galaxy-gemma:0.98.6</container>
+  </requirements>
+  <command detect_errors="exit_code">
+    <![CDATA[
+    mkdir -p output &&
+    gemma -g '$geno_input'
+          -p '$pheno_input'
+          -n ${pheno_column}
+          -a '$anno_input'
+          -k '$kinship_matrix'
+          -lmm
+          -o lmm_results
+    ]]>
+  </command>
+  <inputs>
+    <param name="geno_input" type="data" format="txt,tabular" label="Genotype file (geno.txt.gz)" />
+    <param name="pheno_input" type="data" format="txt,tabular" label="Phenotype file (pheno.txt)" />
+    <param name="pheno_column" type="integer" value="1" label="Phenotype column number" help="Which column in the phenotype file to use (1-based index)" />
+    <param name="anno_input" type="data" format="txt,tabular" label="SNP annotation file" />
+    <param name="kinship_matrix" type="data" format="txt" label="Kinship matrix file (from Kinship tool)" />
+  </inputs>
+  <outputs>
+    <data name="output_assoc" format="tsv" from_work_dir="output/lmm_results.assoc.txt" label="GEMMA LMM Association Results" />
+  </outputs>
+  <tests>
+    <test>
+      <param name="geno_input" value="mouse_hs1940.geno.txt.gz" />
+      <param name="pheno_input" value="mouse_hs1940.pheno.txt" />
+      <param name="pheno_column" value="1" />
+      <param name="anno_input" value="mouse_hs1940.anno.txt" />
+      <param name="kinship_matrix" value="mouse_hs1940.cXX.txt" />
+      <output name="output_assoc" file="mouse_hs1940_CD8_lmm.assoc.txt" compare="sim_size" />
+    </test>
+  </tests>
+  <help>
+    <![CDATA[
+**GEMMA Univariate Linear Mixed Model**
+
+This tool performs univariate linear mixed model analysis using GEMMA.
+
+Command equivalent:
+docker run -v $(pwd)/example:/data -w /data --rm galaxy-gemma:0.98.6 \
+  gemma -g mouse_hs1940.geno.txt.gz -p mouse_hs1940.pheno.txt -n 1 \
+  -a mouse_hs1940.anno.txt -k output/mouse_hs1940.cXX.txt -lmm \
+  -o mouse_hs1940_CD8_lmm
+
+For more information, see the GEMMA manual: https://github.com/genetics-statistics/GEMMA
+    ]]>
+  </help>
+</tool>

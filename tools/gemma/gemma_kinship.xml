@@ -1,0 +1,42 @@
+<tool id="gemma_kinship" name="GEMMA Kinship" version="0.98.6">
+  <description>Compute kinship matrix using GEMMA</description>
+  <requirements>
+    <container type="docker">voluture2721/galaxy-gemma:0.98.6</container>
+  </requirements>
+  <command detect_errors="exit_code">
+    <![CDATA[
+    mkdir -p output &&
+    gemma -g '$geno_input' 
+          -p '$pheno_input' 
+          -gk 
+          -o kinship_matrix
+    ]]>
+  </command>
+  <inputs>
+    <param name="geno_input" type="data" format="txt,tabular" label="Genotype file (geno.txt.gz)" />
+    <param name="pheno_input" type="data" format="txt,tabular" label="Phenotype file (pheno.txt)" />
+  </inputs>
+  <outputs>
+    <data name="output_kinship" format="txt" from_work_dir="output/kinship_matrix.cXX.txt" label="GEMMA Kinship Matrix" />
+  </outputs>
+  <tests>
+    <test>
+      <param name="geno_input" value="mouse_hs1940.geno.txt.gz" />
+      <param name="pheno_input" value="mouse_hs1940.pheno.txt" />
+      <output name="output_kinship" file="mouse_hs1940.cXX.txt" compare="sim_size" />
+    </test>
+  </tests>
+  <help>
+    <![CDATA[
+**GEMMA Kinship Matrix Computation**
+
+This tool computes a kinship matrix using GEMMA (Genome-wide Efficient Mixed Model Association).
+
+Command equivalent:
+docker run -v $(pwd)/example:/data -w /data --rm galaxy-gemma:0.98.6 \
+  gemma -g mouse_hs1940.geno.txt.gz -p mouse_hs1940.pheno.txt -gk -o mouse_hs1940
+
+For more information, see the GEMMA manual: https://github.com/genetics-statistics/GEMMA
+    ]]>
+  </help>
+</tool>
